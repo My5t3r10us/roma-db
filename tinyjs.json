@@ -13,5 +13,9 @@
     "devUrl": "http://127.0.0.1:5186"
   },
   "popups": "deny",
-  "downloads": "deny"
+  "downloads": "deny",
+  "icon": "assets/icon.png",
+  "windows": {
+    "icon": "assets/icon.ico"
+  }
 }

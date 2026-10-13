@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.build/
+web-dist/
+companion/
+.env*
+!.env.example
+*.log
+artifacts/

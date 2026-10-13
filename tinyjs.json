@@ -1,0 +1,17 @@
+{
+  "name": "roma-db",
+  "title": "Roma DB",
+  "id": "com.romadb.desktop",
+  "version": "1.0.1",
+  "minTinyjsVersion": "0.50.1",
+  "size": "1440x920",
+  "backend": "backend/main.ts",
+  "frontend": {
+    "build": "npm run build",
+    "dist": "web-dist",
+    "dev": "node scripts/ensure-frontend.mjs",
+    "devUrl": "http://127.0.0.1:5186"
+  },
+  "popups": "deny",
+  "downloads": "deny"
+}

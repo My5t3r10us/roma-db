@@ -1,0 +1,39 @@
+{
+  "name": "roma-db",
+  "version": "1.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/build-worker.mjs && tinyjs dev",
+    "dev:frontend": "vite --host 127.0.0.1 --port 5186 --strictPort",
+    "build": "tsc --noEmit && vite build",
+    "build:worker": "node scripts/build-worker.mjs",
+    "package": "node scripts/package.mjs",
+    "test": "node --import tsx --test tests/*.test.ts",
+    "test:integration": "node --env-file=.env.test --import tsx --test --test-concurrency=1 tests/integration/*.test.ts",
+    "test:native": "node scripts/native-smoke.mjs",
+    "test:portable": "node scripts/native-smoke.mjs --portable"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.90.0",
+    "lucide-react": "^0.468.0",
+    "pg": "^8.16.3",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "zod": "^4.1.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.1.0",
+    "@types/node": "^24.0.0",
+    "@types/pg": "^8.15.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "esbuild": "^0.25.0",
+    "prettier": "^3.9.10",
+    "tailwindcss": "^4.1.0",
+    "tsx": "^4.20.0",
+    "typescript": "~5.9.2",
+    "vite": "^7.1.0"
+  }
+}

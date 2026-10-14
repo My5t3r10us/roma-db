@@ -325,6 +325,10 @@ export interface ApiMethods {
     input: { profileId: string; database: string; operation: CrudInput };
     output: string[];
   };
+  auditExport: {
+    input: { profileId: string; path: string };
+    output: { path: string };
+  };
   preference: {
     input: { theme?: Theme };
     output: { theme: Theme };

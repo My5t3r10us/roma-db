@@ -482,6 +482,8 @@ export async function demoCall<K extends keyof ApiMethods>(method: K, input: any
   await wait(method === "matrix" ? 220 : 120);
   const db: string = input?.database;
   switch (method) {
+    case "auditExport":
+      throw new Error("L’export d’audit nécessite l’application de bureau.");
     case "profiles":
       return profiles;
     case "saveProfile": {

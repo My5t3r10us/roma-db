@@ -3,6 +3,8 @@ import * as pg from "./postgres";
 import type { ProfileInput } from "../shared/types";
 import { identifier, resourceSchema } from "./sql";
 import { connectionError } from "./connection";
+import { collectAudit } from "./audit";
+import { renderAudit } from "./audit-html";
 
 export async function dispatch(
   method: string,
@@ -71,6 +73,8 @@ export async function dispatch(
         return await pg.ddlApply(client, input.ops);
       case "crudPreview":
         return await pg.crudPreview(client, profile, input.operation);
+      case "auditExport":
+        return { html: renderAudit(await collectAudit(client, profile)) };
       case "membership":
         return await pg.membership(client, profile, input.operation);
       default:

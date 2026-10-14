@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import {
   CalendarClock,
+  FileDown,
   ChevronDown,
   ChevronsUpDown,
   Laptop,
@@ -18,6 +19,7 @@ import {
 } from "lucide-react";
 import { isDesktop } from "./api";
 import { ConnectionDialog, Welcome } from "./connection";
+import { useAuditExport } from "./audit";
 import { Menu, usePopover } from "./overlay";
 import { CommandPalette } from "./palette";
 import { ChangesBar, ReviewSheet } from "./review";
@@ -216,6 +218,7 @@ function Topbar() {
   const ws = useWorkspace();
   const dbMenu = usePopover();
   const page = pages.find((p) => p.id === ws.page)!;
+  const audit = useAuditExport();
   return (
     <header className="flex h-[52px] flex-none items-center gap-2 border-b border-line bg-surface px-4">
       <button
@@ -266,6 +269,9 @@ function Topbar() {
         <Kbd>Ctrl</Kbd>
         <Kbd>K</Kbd>
       </button>
+      <IconButton label="Exporter l’audit (HTML)" onClick={() => void audit.run()} disabled={!ws.overview || audit.busy}>
+        {audit.busy ? <Spinner /> : <FileDown size={15} />}
+      </IconButton>
       <IconButton label="Actualiser" onClick={() => void ws.refresh()} disabled={!ws.overview}>
         {ws.overviewQuery.isFetching ? <Spinner /> : <RefreshCw size={15} />}
       </IconButton>

@@ -87,6 +87,7 @@ async function worker(
   input: any,
   app: App,
   profile?: ProfileInput,
+  timeoutMs = 120000,
 ) {
   await startWorker(app);
   const id = ++nextId;
@@ -96,7 +97,7 @@ async function worker(
       reject(
         new Error("Délai dépassé. Actualisez les données avant de réessayer."),
       );
-    }, 120000);
+    }, timeoutMs);
     pending.set(id, { resolve, reject, timer });
     const bytes = enc.encode(
       JSON.stringify({ id, method, input, profile }) + "\n",
@@ -228,6 +229,19 @@ export const api: Record<string, (input: any, app: App) => Promise<any>> = {
         ? { privateKey: input.privateKey }
         : {}),
     });
+  },
+  auditExport: async ({ profileId, path }: { profileId: string; path: string }, app) => {
+    if (typeof path !== "string" || !/.html?$/i.test(path))
+      throw new Error("Choisissez un fichier .html.");
+    const { html } = await worker(
+      "auditExport",
+      {},
+      app,
+      await profileWithSecrets(app, profileId),
+      600000,
+    );
+    await tjs.writeFile(path, enc.encode(html));
+    return { path };
   },
   preference: async (input, app) => {
     if (input?.theme && ["light", "dark", "system"].includes(input.theme))

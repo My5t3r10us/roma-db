@@ -2,7 +2,11 @@ import type { ApiMethods } from "../shared/types";
 import { demoCall } from "./demo";
 declare global {
   interface Window {
-    tiny?: { api: { call: (method: string, input?: unknown) => Promise<any> } };
+    tiny?: {
+      api: { call: (method: string, input?: unknown) => Promise<any> };
+      dialog?: { saveFile: (opts?: { types?: string[] }) => Promise<string | null> };
+      app?: { shell?: { open: (target: string) => Promise<unknown> } };
+    };
   }
 }
 export const isDesktop = () => Boolean(window.tiny?.api);

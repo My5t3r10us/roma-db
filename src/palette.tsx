@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   CalendarClock,
   CornerDownLeft,
+  FileDown,
   Layers,
   Moon,
   Plug,
@@ -15,6 +16,7 @@ import {
   Users,
 } from "lucide-react";
 import type { Resource } from "../shared/types";
+import { useAuditExport } from "./audit";
 import { resourceKey } from "./permissions";
 import { KindIcon, RoleAvatar, cx } from "./ui";
 import { useWorkspace } from "./workspace";
@@ -41,6 +43,7 @@ function score(text: string, query: string) {
 export function CommandPalette() {
   const ws = useWorkspace();
   const qc = useQueryClient();
+  const audit = useAuditExport();
   const [query, setQuery] = useState("");
   const [active, setActive] = useState(0);
   const ref = useRef<HTMLDialogElement>(null);
@@ -61,6 +64,7 @@ export function CommandPalette() {
     list.push(
       { id: "a:role", group: "Actions", label: "Nouveau rôle", icon: <Plus size={15} />, keywords: "créer utilisateur groupe compte", run: () => ws.go("roles") },
       { id: "a:conn", group: "Actions", label: "Nouvelle connexion", icon: <Plug size={15} />, keywords: "serveur ajouter", run: () => ws.ui.openConnection("new") },
+      { id: "a:audit", group: "Actions", label: "Exporter l’audit (HTML)", detail: "Rôles, droits, bases, schémas, tables", icon: <FileDown size={15} />, keywords: "export rapport audit html", run: () => void audit.run() },
       { id: "a:refresh", group: "Actions", label: "Actualiser", icon: <RefreshCw size={15} />, keywords: "recharger", run: () => void ws.refresh() },
       {
         id: "a:theme",
@@ -135,7 +139,7 @@ export function CommandPalette() {
           run: () => ws.selectProfile(p.id),
         });
     return list;
-  }, [ws, qc]);
+  }, [ws, qc, audit.run]);
   const q = query.trim().toLowerCase();
   const results = items
     .map((i) => ({ i, s: Math.max(score(i.label, q), q ? score(i.keywords || "", q) * 0.5 + score(i.detail || "", q) * 0.4 : 0) }))

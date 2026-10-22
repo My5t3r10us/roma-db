@@ -4,6 +4,7 @@ import {
   CalendarClock,
   CornerDownLeft,
   FileDown,
+  FileLock2,
   Layers,
   Moon,
   Plug,
@@ -58,6 +59,7 @@ export function CommandPalette() {
       { id: "p:roles", group: "Aller à", label: "Rôles", icon: <Users size={15} />, run: () => ws.go("roles") },
       { id: "p:schemas", group: "Aller à", label: "Schémas", detail: "Structure des tables", icon: <Layers size={15} />, run: () => ws.go("schemas") },
       { id: "p:defaults", group: "Aller à", label: "Droits par défaut", icon: <CalendarClock size={15} />, run: () => ws.go("defaults") },
+      { id: "p:hba", group: "Aller à", label: "Authentification", detail: "pg_hba.conf", icon: <FileLock2 size={15} />, keywords: "hba pg_hba connexion réseau adresse méthode", run: () => ws.go("hba") },
     ];
     if (ws.pendingCount)
       list.push({ id: "a:review", group: "Actions", label: "Vérifier les modifications", detail: `${ws.pendingCount} en attente`, icon: <CornerDownLeft size={15} />, run: () => ws.ui.openReview() });

@@ -237,6 +237,19 @@ export type DdlOp =
     })
   | (On & { op: "dropIndex"; name: string })
   | (On & { op: "setComment"; column?: string; comment: string | null });
+export interface HbaFile {
+  path: string;
+  content: string;
+  fingerprint: string;
+  /** Errors PostgreSQL reports for the file on disk, by line number. */
+  errors: { line: number; message: string }[];
+  writable: boolean;
+  readOnlyReason: string | null;
+  identMaps: string[];
+  clientAddress: string | null;
+  /** Copy of the previous file, after a write. */
+  backup?: string;
+}
 export interface ApiMethods {
   profiles: { input: undefined; output: Profile[] };
   saveProfile: { input: ProfileInput; output: Profile };
@@ -334,4 +347,9 @@ export interface ApiMethods {
     output: { theme: Theme };
   };
   devProfile: { input: undefined; output: ProfileInput | null };
+  hba: { input: { profileId: string }; output: HbaFile };
+  hbaApply: {
+    input: { profileId: string; content: string; fingerprint: string };
+    output: HbaFile;
+  };
 }

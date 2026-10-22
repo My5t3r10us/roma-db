@@ -5,6 +5,7 @@ import { identifier, resourceSchema } from "./sql";
 import { connectionError } from "./connection";
 import { collectAudit } from "./audit";
 import { renderAudit } from "./audit-html";
+import { hbaApply, hbaRead } from "./hba";
 
 export async function dispatch(
   method: string,
@@ -18,6 +19,8 @@ export async function dispatch(
   const database =
     method === "overview" ||
     method === "testConnection" ||
+    method === "hba" ||
+    method === "hbaApply" ||
     ((method === "crud" || method === "crudPreview") &&
       input.operation?.kind === "database")
       ? undefined
@@ -75,6 +78,10 @@ export async function dispatch(
         return await pg.crudPreview(client, profile, input.operation);
       case "auditExport":
         return { html: renderAudit(await collectAudit(client, profile)) };
+      case "hba":
+        return await hbaRead(client, profile);
+      case "hbaApply":
+        return await hbaApply(client, profile, input as any);
       case "membership":
         return await pg.membership(client, profile, input.operation);
       default:

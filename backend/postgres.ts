@@ -101,7 +101,7 @@ export async function connect(
     throw error;
   }
 }
-async function protectedServer(profile: ProfileInput): Promise<boolean> {
+export async function protectedServer(profile: ProfileInput): Promise<boolean> {
   if (sharedDev(profile)) return true;
   if (profile.port !== 5432) return false;
   try {

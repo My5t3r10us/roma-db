@@ -177,6 +177,8 @@ const remoteMethods = [
   "ddlPreview",
   "ddlApply",
   "crudPreview",
+  "hba",
+  "hbaApply",
 ];
 export const api: Record<string, (input: any, app: App) => Promise<any>> = {
   profiles: async (_input, app) => list(app),

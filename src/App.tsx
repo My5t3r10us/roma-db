@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import {
   CalendarClock,
   FileDown,
+  FileLock2,
   ChevronDown,
   ChevronsUpDown,
   Laptop,
@@ -25,6 +26,7 @@ import { CommandPalette } from "./palette";
 import { ChangesBar, ReviewSheet } from "./review";
 import { AccessPage } from "./pages/access";
 import { DefaultsPage } from "./pages/defaults";
+import { HbaPage } from "./pages/hba";
 import { RolesPage } from "./pages/roles";
 import { SchemasPage } from "./pages/schemas";
 import { SchemaContentDialog } from "./pages/schema-content";
@@ -36,6 +38,7 @@ const pages: { id: Page; label: string; icon: typeof ShieldCheck; hint: string }
   { id: "roles", label: "Rôles", icon: Users, hint: "Comptes et groupes" },
   { id: "schemas", label: "Schémas", icon: Layers, hint: "Tables et colonnes" },
   { id: "defaults", label: "Droits par défaut", icon: CalendarClock, hint: "Futurs objets" },
+  { id: "hba", label: "Authentification", icon: FileLock2, hint: "pg_hba.conf" },
 ];
 
 export default function App() {
@@ -48,7 +51,7 @@ export default function App() {
       } else if ((e.ctrlKey || e.metaKey) && e.key === "Enter" && ws.pendingCount) {
         e.preventDefault();
         ws.ui.openReview();
-      } else if (e.altKey && /^[1-4]$/.test(e.key) && ws.profile) {
+      } else if (e.altKey && /^[1-5]$/.test(e.key) && ws.profile) {
         e.preventDefault();
         ws.go(pages[Number(e.key) - 1].id);
       }
@@ -121,6 +124,7 @@ function Content() {
   if (ws.page === "roles") return <RolesPage />;
   if (ws.page === "schemas") return <SchemasPage />;
   if (ws.page === "defaults") return <DefaultsPage />;
+  if (ws.page === "hba") return <HbaPage />;
   return <AccessPage />;
 }
 

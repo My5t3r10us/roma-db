@@ -19,6 +19,7 @@ import type {
   TableIndex,
 } from "../shared/types";
 import { ancestorsOf, uiPrivileges } from "./permissions";
+import { parseHba, validateRule } from "../shared/hba";
 
 type Acl = { role: string; privilege: string; grantable: boolean }[] | null;
 interface Obj extends Resource {
@@ -477,6 +478,37 @@ function crud(database: string, op: CrudInput) {
   }
   throw new Error("Démonstration : la gestion des bases n’est pas simulée.");
 }
+let hbaContent = `# PostgreSQL Client Authentication Configuration File
+# TYPE  DATABASE        USER            ADDRESS                 METHOD
+
+# "local" is for Unix domain socket connections only
+local   all             postgres                                peer
+local   all             all                                     scram-sha-256
+# IPv4 local connections:
+host    all             all             127.0.0.1/32            scram-sha-256
+# IPv6 local connections:
+host    all             all             ::1/128                 scram-sha-256
+# Application servers
+hostssl roma            +app_writer     10.20.0.0/16            scram-sha-256
+hostssl roma            analysts        10.30.0.0/16            ldap ldapserver=ldap.roma.example ldapprefix="uid=" ldapsuffix=",ou=people,dc=roma,dc=example"
+host    replication     all             10.20.5.0/24            scram-sha-256
+host    all             all             all                     reject
+`;
+const hbaFingerprint = (text: string) => {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < text.length; i++) h = Math.imul(h ^ text.charCodeAt(i), 0x01000193) >>> 0;
+  return h.toString(16).padStart(8, "0").repeat(8);
+};
+const hbaFile = () => ({
+  path: "/var/lib/postgresql/data/pg_hba.conf",
+  content: hbaContent,
+  fingerprint: hbaFingerprint(hbaContent),
+  errors: [],
+  writable: true,
+  readOnlyReason: null,
+  identMaps: ["omicron"],
+  clientAddress: "10.20.3.14",
+});
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 export async function demoCall<K extends keyof ApiMethods>(method: K, input: any): Promise<any> {
   await wait(method === "matrix" ? 220 : 120);
@@ -618,6 +650,18 @@ export async function demoCall<K extends keyof ApiMethods>(method: K, input: any
       return { theme: input?.theme || "system" };
     case "devProfile":
       return null;
+    case "hba":
+      return hbaFile();
+    case "hbaApply": {
+      if (input.fingerprint !== hbaFingerprint(hbaContent))
+        throw new Error("pg_hba.conf a été modifié depuis son ouverture. Actualisez, puis refaites vos changements.");
+      const errors = parseHba(input.content).flatMap((e) =>
+        e.kind === "rule" ? Object.values(validateRule(e, VERSION)).map((m) => `ligne ${e.line} : ${m}`) : [],
+      );
+      if (errors.length) throw new Error("PostgreSQL refuse ce fichier — " + errors.join(" ; ") + ". Le fichier d’origine a été restauré.");
+      hbaContent = input.content.replace(/\r\n?/g, "\n");
+      return { ...hbaFile(), backup: "/var/lib/postgresql/data/pg_hba.conf.roma-backup" };
+    }
     default:
       throw new Error("Opération non disponible en démonstration.");
   }

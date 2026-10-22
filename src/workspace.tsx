@@ -21,7 +21,7 @@ import { mergeChanges } from "./permissions";
 import { draftOps, type TableDraft } from "./structure";
 import { useToast } from "./toast";
 
-export type Page = "access" | "roles" | "schemas" | "defaults";
+export type Page = "access" | "roles" | "schemas" | "defaults" | "hba";
 export interface AccessView {
   scope: MatrixScope;
   schema: string;

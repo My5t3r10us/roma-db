@@ -73,6 +73,8 @@ export async function connect(
       pools.set(key, pool);
     }
     const acquired = await pool.connect();
+    // A dropped socket emits "error" on the checked-out client; without a listener it kills the worker.
+    acquired.on("error", () => {});
     try {
       await acquired.query("SET search_path TO pg_catalog");
     } catch (error) {
@@ -89,6 +91,7 @@ export async function connect(
     } as unknown as Client;
   }
   const client = new Client(config);
+  client.on("error", () => {});
   try {
     await client.connect();
     await client.query("SET search_path TO pg_catalog");

@@ -84,6 +84,11 @@ export async function dispatch(
     await client.end();
   }
 }
+// A socket error outside a request must not take the whole worker down.
+const logError = (error: unknown) =>
+  process.stderr.write(String((error as Error)?.stack || error) + "\n");
+process.on("uncaughtException", logError);
+process.on("unhandledRejection", logError);
 const lines = createInterface({ input: process.stdin, crlfDelay: Infinity });
 let active = 0;
 const queue: (() => Promise<void>)[] = [];

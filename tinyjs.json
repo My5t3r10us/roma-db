@@ -9,7 +9,7 @@
   "frontend": {
     "build": "npm run build",
     "dist": "web-dist",
-    "dev": "node scripts/ensure-frontend.mjs",
+    "dev": "npm run dev:frontend",
     "devUrl": "http://127.0.0.1:5186"
   },
   "popups": "deny",

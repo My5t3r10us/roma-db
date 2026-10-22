@@ -63,7 +63,7 @@ Distribuez le dossier `dist` entier. Lancez `dist/roma-db.exe`. Le paquet contie
 
 Le frontend ouvert dans un navigateur présente une démonstration explicitement signalée. Les données de cet aperçu sont fictives et vivent en mémoire : on peut tout essayer (droits, rôles, tables), rien n’atteint un serveur et tout est réinitialisé au rechargement. Pour les connexions réelles, utilisez la fenêtre TinyJS.
 
-L’aperçu est enregistré dans App Viewer sous « Roma DB · aperçu ». `appv open "Roma DB · aperçu"` le lance ; `npm run dev` réutilise ce serveur pour la fenêtre native. Après une modification du compagnon ou du backend, relancez `npm run dev` pour recompiler ces couches.
+`npm run dev` lance le serveur Vite de l’aperçu puis la fenêtre native. Après une modification du compagnon ou du backend, relancez `npm run dev` pour recompiler ces couches.
 
 ## Structure
 

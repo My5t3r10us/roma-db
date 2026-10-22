@@ -33,12 +33,27 @@ async function startWorker(app: App) {
   child = app.spawnHidden([node, `${root}/companion/worker.cjs`], {
     stdin: "pipe",
     stdout: "pipe",
-    stderr: "ignore",
+    stderr: "pipe",
     cwd: root,
     env: { ...tjs.env, ROMA_DEV: built ? "0" : "1" },
   });
   writer = child.stdin.getWriter();
   const process = child;
+  // Keep the end of stderr so a crash reports its real cause.
+  let stderr = "";
+  void (async () => {
+    const reader = process.stderr.getReader();
+    const decoder = new TextDecoder();
+    try {
+      for (;;) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        stderr = (stderr + decoder.decode(value, { stream: true })).slice(-2000);
+      }
+    } catch {
+      /* ignore */
+    }
+  })();
   void (async () => {
     const reader = process.stdout.getReader();
     const decoder = new TextDecoder();
@@ -75,8 +90,12 @@ async function startWorker(app: App) {
       if (child === process) {
         child = undefined;
         writer = undefined;
+        // Let the stderr reader drain before reporting.
+        await new Promise((r) => setTimeout(r, 50));
+        const cause = stderr.trim().split("\n").slice(-3).join(" ").trim();
         failPending(
-          "Le processus PostgreSQL s’est arrêté. Réessayez pour le relancer.",
+          "Le processus PostgreSQL s’est arrêté. Réessayez pour le relancer." +
+            (cause ? " Cause : " + cause : ""),
         );
       }
     }
